@@ -1,0 +1,28 @@
+name: github-api-scripts-workflow-simple
+on:
+  workflow_dispatch:
+  workflow_call:
+  repository_dispatch:
+    types: [custom_event_type]
+jobs:
+  blank:
+    runs-on: ubuntu-latest
+    steps:
+      - name: MyCommands
+        run: |
+          curl --version
+          curl --trace trace.txt -H 'Accept: application/vnd.github+json' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN}}" https://api.github.com/octocat
+          mkdir -p artifacts/trace
+          echo "### Artifacts" > artifacts/trace/readme.md
+          cp trace.txt artifacts/trace
+          #cp timing.json artifacts/trace
+          #cp header.json artifacts/trace
+      # https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+      - name: Archive job artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: the power workflow-simple artifact
+          path: |
+            artifacts/**/*.*
+          retention-days: 2
+
